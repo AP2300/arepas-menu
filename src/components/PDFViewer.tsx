@@ -12,9 +12,10 @@ interface PDFViewerProps {
 
 const PDFViewer: React.FC<PDFViewerProps> = ({ url }) => {
   const [numPages, setNumPages] = useState<number | null>(null);
-  const [width, setWidth] = useState<number>(window.innerWidth);
+  const [width, setWidth] = useState<number>(0);
 
   useEffect(() => {
+    setWidth(window.innerWidth);
     const handleResize = () => setWidth(window.innerWidth);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
@@ -32,7 +33,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ url }) => {
         loading={<div className="loading">Loading PDF...</div>}
         error={<div className="error">Failed to load PDF.</div>}
       >
-        {Array.from(new Array(numPages), (el, index) => (
+        {width > 0 && Array.from({ length: numPages || 0 }, (el, index) => (
           <Page
             key={`page_${index + 1}`}
             pageNumber={index + 1}
@@ -51,6 +52,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ url }) => {
           display: flex;
           flex-direction: column;
           align-items: center;
+          padding: 10px 0;
         }
         .react-pdf__Page {
           margin-bottom: 10px;
